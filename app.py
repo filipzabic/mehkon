@@ -1,6 +1,5 @@
 from flask import Flask, redirect, request, jsonify, make_response, send_file
 from flask import render_template as template
-#from waitress import serve
 from sympy import symbols, init_printing, latex, Matrix, tan, diff, zeros
 from utils import calculate_cube_side, calculate_gradient_tensor, \
                   calculate_left_green_cauchy_tensor, \
@@ -76,7 +75,3 @@ def index_post():
 @app.errorhandler(404)
 def error404(e):
     return 'Stranica ne postoji'
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
