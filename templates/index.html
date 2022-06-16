@@ -2,7 +2,8 @@
 
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
@@ -17,10 +18,57 @@
         </a>
       </nav>
 
-      
+      <img src="/static/kocke.png" width="700" height="180" alt="">
 
-\({{ var }}\)
+      <form action='/' method='post'>
 
+        <div class="form-group">
+          <label for="">Stranica kocke</label>
+          <input type="text" class="form-control" id="a" name="a" placeholder="">
+        </div>
+
+        <div class="form-group">
+          <label for="">Kut alfa</label>
+          <input type="text" class="form-control" id="alpha" name="alpha" placeholder="">
+        </div>
+
+        <div class="form-group">
+          <label for="">Kut beta</label>
+          <input type="text" class="form-control" id="beta" name="beta" placeholder="">
+        </div>
+
+        <div class="form-group">
+          <label for="">Kut gamma</label>
+          <input type="text" class="form-control" id="gamma" name="gamma" placeholder="">
+        </div>
+
+        <div class="form-group">
+          <label for="">Example select</label>
+          <select class="form-control" id="selection">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Rijesi</button>
+
+      </form>
+
+\(\textbf{F}={{ F }}\)
+<br>
+<br>
+\(\textbf{b}={{ b }}\)
+<br>
+<br>
+\(\textbf{C}={{ C }}\)
+<br>
+<br>
+\(\textbf{e}={{ e }}\)
+<br>
+<br>
+\(\textbf{E}={{ E }}\)
 
 </body>
 </html>
