@@ -1,11 +1,14 @@
 from flask import Flask, redirect, request, jsonify, make_response, send_file
 from flask import render_template as template
-from sympy import symbols, init_printing, latex, Matrix, tan, diff, zeros
+from sympy import symbols, latex, zeros, Matrix, N
 from utils import calculate_cube_side, calculate_gradient_tensor, \
                   calculate_left_green_cauchy_tensor, \
                   calculate_right_green_cauchy_tensor, \
                   calculate_euler_tensor, \
-                  calculate_lagrange_tensor
+                  calculate_lagrange_tensor, \
+                  calculate_parallelepiped_diagonal, \
+                  calculate_cube_side, \
+                  step_one, step_two, step_three, step_four
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -14,62 +17,113 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/')
 def index():
 
+    Fs = zeros(3)
+    bs = zeros(3)
+    es = zeros(3)
+    Cs = zeros(3)
+    Es = zeros(3)
+    Ds = zeros(3,1)
+
     F = zeros(3)
     b = zeros(3)
     e = zeros(3)
     C = zeros(3)
     E = zeros(3)
+    D = zeros(3,1)
+
+    Fs = latex(Fs)
+    bs = latex(bs)
+    es = latex(es)
+    Cs = latex(Cs)
+    Es = latex(Es)
+    Ds = latex(Ds)
 
     F = latex(F)
     b = latex(b)
     e = latex(e)
     C = latex(C)
     E = latex(E)
+    D = latex(D)
 
-    return template('index.html', F=F, b=b, C=C, e=e, E=E)
+    return template('index.html',
+                    F=F, b=b, C=C, e=e, E=E, D=D,
+                    Fs=Fs, bs=bs, Cs=Cs, es=es, Es=Es, Ds=D)
 
 
 @app.post('/')
 def index_post():
-    a = float(request.form['a'])
+    a_val = float(request.form['a'])
 
-    alpha = float(request.form['alpha'])
-    beta = float(request.form['beta'])
-    gamma = float(request.form['gamma'])
+    alpha_val = float(request.form['alpha'])
+    beta_val = float(request.form['beta'])
+    gamma_val = float(request.form['gamma'])
 
-    volume = a**3
+    selection = int(request.form['selection'])
 
-    #selection = int(request.form['selection'])
+    if selection == 1:
+        Fs = step_one()
 
-    X1, X2, X3 = symbols('X1 X2 X3')
-    x1, x2, x3 = symbols('x1 x2 x3')
+    elif selection == 2:
+        Fs = step_two()
 
-    #vlak x1
-    x = calculate_cube_side(volume, a*alpha, a*beta, 10)
+    elif selection == 3:
+        Fs = step_three()
 
-    u1 = tan(gamma)*X2
-    u2 = 0
-    u3 = 0
+    elif selection == 4:
+        F1s = step_one()
+        F2s = step_two()
+        F3s = step_three()
+        Fs = step_four(F1s,F2s,F3s)
 
-    x1 = X1 + u1
-    x2 = X2 + u2
-    x3 = X3 + u3
+    alpha, beta, gamma, y, z = symbols('alpha beta gamma y z')
+    a = symbols('a')
 
-    F = calculate_gradient_tensor(x1, x2, x3, X1, X2, X3)
+    bs = calculate_left_green_cauchy_tensor(Fs)
+    Cs = calculate_right_green_cauchy_tensor(Fs)
+    es = calculate_euler_tensor(bs)
+    Es = calculate_lagrange_tensor(Cs)
+    ds = Matrix([[a],[a],[a]])
+    Ds = calculate_parallelepiped_diagonal(Fs, ds)
+
+    ys = calculate_cube_side(a**3, alpha*a, a, y*a, y)[0]
+    zs = calculate_cube_side(a**3, alpha*a, beta*a, z*a, z)[0]
+
+    y_val = ys.subs([(alpha, alpha_val)])
+    z_val = zs.subs([(alpha, alpha_val), (beta, beta_val)])
+
+    substitutions = [(alpha, alpha_val), (beta, beta_val), (gamma, gamma_val), 
+                     (y, y_val), (z, z_val)]
+
+    F = Fs.subs(substitutions)
     b = calculate_left_green_cauchy_tensor(F)
     C = calculate_right_green_cauchy_tensor(F)
     e = calculate_euler_tensor(b)
     E = calculate_lagrange_tensor(C)
+    d = Matrix([[a_val],[a_val],[a_val]])
+    D = calculate_parallelepiped_diagonal(F, d)
 
-    F = latex(F)
-    b = latex(b)
-    e = latex(e)
-    C = latex(C)
-    E = latex(E)
+    F = latex(N(F, 3))
+    b = latex(N(b, 3))
+    e = latex(N(e, 3))
+    C = latex(N(C, 3))
+    E = latex(N(E, 3))
+    D = latex(N(D, 3))
+
+    Fs = latex(Fs)
+    bs = latex(bs)
+    es = latex(es)
+    Cs = latex(Cs)
+    Es = latex(Es)
+    Ds = latex(Ds)
+
+    return template('index.html',
+                    F=F, b=b, C=C, e=e, E=E, D=D,
+                    Fs=Fs, bs=bs, Cs=Cs, es=es, Es=Es, Ds=Ds)
 
 
-
-    return template('index.html', F=F, b=b, C=C, e=e, E=E)
+@app.route('/postupak')
+def postupak():
+    return send_file('postupak.pdf', as_attachment=False, attachment_filename="postupak.pdf")
 
 
 @app.errorhandler(404)
